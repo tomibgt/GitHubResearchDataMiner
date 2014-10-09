@@ -13,7 +13,7 @@ class Test(unittest.TestCase):
     # issue #2 Draw commit logs for a repository in GitHub
     def testGitHubConnection(self):
         connection = GitHubConnection(user="tomibgt", repo="GitHubResearchDataMiner")
-        commits = connection.getCommits()
+        commits = connection.getCommitMessages()
         validFlag = commits.count('\n') > 2
         self.assertTrue(validFlag, "Cannot draw commit logs from GitHub")
 
@@ -23,7 +23,7 @@ class Test(unittest.TestCase):
         filepath = connection.getCsv()
         fileh = open(filepath, 'r')
         for line in fileh:
-            self.assertGreater(line.count(';'), 4, "Produced file is not CSV")
+            self.assertGreater(line.count(';'), 1, "Produced file is not CSV: "+line)
         fileh.close()
         os.remove(filepath)
 
