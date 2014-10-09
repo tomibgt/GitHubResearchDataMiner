@@ -14,3 +14,10 @@ class GitHubConnection(object):
         for commit in commits:
             reva = reva + commit.commit.message+"\n"
         return reva
+    
+    def getCsvLineFromCommit(self, commit):
+        commitcommit = commit.commit
+        commitfile   = commit.file
+        reva = commit.sha+";"+commitfile.additions+";"+commitfile.blob_url+";"+commitfile.changes+";"+commitfile.contents_url+";"+commitfile.deletions+";"+commitfile.filename+";"+commitfile.patch+";"+commitfile.raw_url+";"+commitfile.status+";"+commitcommit.message
+        return reva
+    
