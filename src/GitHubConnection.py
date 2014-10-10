@@ -40,16 +40,24 @@ class GitHubConnection(object):
         return(filepath)
         
     def getCsvLineFromCommit(self, commit):
-        commitcommit = commit.commit
-        commitfiles  =  ""
+        commitcommit  = commit.commit
+        commitfiles   = ""
+        commitadds    = ""
+        commitdels    = ""
+        commitchanges = ""
         comma        = False
         for afile in commit.files:
-            commitfiles = commitfiles+afile.filename
             if(comma):
-                commitfiles = commitfiles+','
+                commitfiles   = commitfiles+','
+                commitadds    = commitadds+','
+                commitdels    = commitdels+','
+                commitchanges = commitchanges+','
+            commitfiles   = commitfiles+afile.filename
+            commitadds    = commitadds+str(afile.additions)
+            commitdels    = commitdels+str(afile.deletions)
+            commitchanges = commitchanges+str(afile.changes)
             comma = True
-        reva = commit.sha+";"+commitfiles+";"+commitcommit.message
-        #reva = commit.sha+";"+commitfile.additions+";"+commitfile.blob_url+";"+commitfile.changes+";"+commitfile.contents_url+";"+commitfile.deletions+";"+commitfile.filename+";"+commitfile.patch+";"+commitfile.raw_url+";"+commitfile.status+";"+commitcommit.message
+        reva = commit.sha+";"+commitfiles+";"+commitadds+";"+commitdels+";"+commitchanges+";"+commitcommit.message
         reva = reva.replace('\n', ' ')
         return reva
     
