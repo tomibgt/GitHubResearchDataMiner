@@ -1,6 +1,7 @@
 import datetime
 import time
 import GitHubResearchDataMiner
+import HelperFunctions
 from github import Github
 
 
@@ -10,14 +11,14 @@ class GitHubConnection(object):
         self.gitHubRepoName = repo
         self.github = Github(GitHubResearchDataMiner.config.get('authentication', 'ghusername'), GitHubResearchDataMiner.config.get('authentication', 'ghpassword'))
         self.repo = self.github.get_repo(user+"/"+repo)
-        self.requestRateTimer = datetime.datetime.now().microsecond
+        self.requestRateTimer = HelperFunctions.millitimestamp()
         
     #This method is used to limit the rate of requests sent to GitHub
     def __choke(self):
-        delta = datetime.datetime.now().microsecond-self.requestRateTimer
-        if delta < 80000:
-            time.sleep(delta/1000000)
-        self.requestRateTimer = datetime.datetime.now().microsecond
+        delta = float(HelperFunctions.millitimestamp()-self.requestRateTimer)
+        if delta < 80:
+            time.sleep((80-delta)/1000)
+        self.requestRateTimer = HelperFunctions.millitimestamp()
         
     def getCommitMessages(self):
         self.__choke()
