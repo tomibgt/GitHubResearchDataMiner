@@ -8,7 +8,7 @@ import unittest
 from GitHubConnection import GitHubConnection
 
 
-class Test(unittest.TestCase):
+class ConnectedTest(unittest.TestCase):
 
     # issue #2 Draw commit logs for a repository in GitHub
     def testGitHubConnection(self):
