@@ -44,6 +44,7 @@ class GitHubConnection(object):
         
     def getCsvLineFromCommit(self, commit):
         commitcommit  = commit.commit
+        commitauthor  = commit.committer
         commitfiles   = ""
         commitadds    = ""
         commitdels    = ""
@@ -60,9 +61,9 @@ class GitHubConnection(object):
             commitdels    = commitdels+str(afile.deletions)
             commitchanges = commitchanges+str(afile.changes)
             comma = True
-        reva = commit.sha+";"+commitfiles+";"+commitadds+";"+commitdels+";"+commitchanges+";"+commitcommit.message
+        reva = commit.sha+";"+str(commitauthor.created_at)+";"+commitfiles+";"+commitadds+";"+commitdels+";"+commitchanges+";"+commitcommit.message
         reva = reva.replace('\n', ' ')
         if GitHubResearchDataMiner.config.get('debug', 'verbose'):
-            print "Read commit "+commit.sha+": "+commitcommit.message
+            print "Read commit "+commit.sha+"("+str(commitauthor.created_at)+"): "+commitcommit.message
         return reva
     
