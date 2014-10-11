@@ -18,4 +18,3 @@ if __name__ == '__main__':
     connection = GitHubConnection.GitHubConnection(user=user, repo=repo)
     connection.getCsv()
     
-    

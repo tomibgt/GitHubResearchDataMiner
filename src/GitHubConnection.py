@@ -17,7 +17,10 @@ class GitHubConnection(object):
     def __choke(self):
         delta = float(HelperFunctions.millitimestamp()-self.requestRateTimer)
         if delta < 80:
-            time.sleep((80-delta)/1000)
+            naptime=(80-delta)/1000
+            if GitHubResearchDataMiner.config.get('debug', 'verbose'):
+                print "Sleeping "+str(naptime)+" seconds..."
+            time.sleep(naptime)
         self.requestRateTimer = HelperFunctions.millitimestamp()
         
     def getCommitMessages(self):
@@ -59,5 +62,7 @@ class GitHubConnection(object):
             comma = True
         reva = commit.sha+";"+commitfiles+";"+commitadds+";"+commitdels+";"+commitchanges+";"+commitcommit.message
         reva = reva.replace('\n', ' ')
+        if GitHubResearchDataMiner.config.get('debug', 'verbose'):
+            print "Read commit "+commit.sha+": "+commitcommit.message
         return reva
     
