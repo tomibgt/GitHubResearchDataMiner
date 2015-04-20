@@ -9,3 +9,5 @@ at http://stackoverflow.com/questions/12519327/how-to-define-an-external-source-
 
 You need to copy the config.cfg.template file under the name of config.cfg and populate it with proper
 data.
+
+Usage: python GitHubResearchDataMiner.py githubUserName githubProjectName

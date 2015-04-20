@@ -11,7 +11,7 @@ class GitHubConnection(object):
         self.gitHubUserName = user
         self.gitHubRepoName = repo
         self.github = Github(GitHubResearchDataMiner.config.get('authentication', 'ghusername'), GitHubResearchDataMiner.config.get('authentication', 'ghpassword'))
-        try:
+        try: # Try to open the repository
             self.repo = self.github.get_repo(user+"/"+repo)
         except UnknownObjectException:
             print "Repository "+user+"/"+repo+" not found."
@@ -37,10 +37,13 @@ class GitHubConnection(object):
             reva = reva + commit.commit.message+"\n"
         return reva
     
-    #Returns a handle to a csv file
+    '''
+    Returns a handle to a csv file
+    '''
     def getCsv(self):
         filepath = 'output.csv'
         fileh = open(filepath, 'w')
+        fileh.write(self.getCsvHeaderRow())
         self.__choke()
         commits = self.repo.get_commits()
         for commit in commits:
@@ -50,7 +53,16 @@ class GitHubConnection(object):
                 fileh.write(line.encode("utf-8"))
         fileh.close()
         return(filepath)
-        
+
+    '''
+    Returns the header row for the output csv file
+    '''
+    def getCsvHeaderRow(self):
+        return u"sha;commit date;committed file names;commit additions;commit deletions;commit changes;commit message"
+
+    '''
+    Parses the given GitHub commit into a row for the csv file.
+    '''
     def getCsvLineFromCommit(self, commit):
         commitcommit  = commit.commit
         commitauthor  = commit.author
