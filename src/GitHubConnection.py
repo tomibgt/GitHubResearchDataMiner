@@ -1,8 +1,9 @@
-import datetime
+import sys
 import time
 import GitHubResearchDataMiner
 import HelperFunctions
 from github import Github
+from github.GithubException import UnknownObjectException
 
 
 class GitHubConnection(object):
@@ -10,7 +11,12 @@ class GitHubConnection(object):
         self.gitHubUserName = user
         self.gitHubRepoName = repo
         self.github = Github(GitHubResearchDataMiner.config.get('authentication', 'ghusername'), GitHubResearchDataMiner.config.get('authentication', 'ghpassword'))
-        self.repo = self.github.get_repo(user+"/"+repo)
+        try:
+            self.repo = self.github.get_repo(user+"/"+repo)
+        except UnknownObjectException:
+            print "Repository "+user+"/"+repo+" not found."
+            GitHubResearchDataMiner.printHowToUse()
+            sys.exit()
         self.requestRateTimer = HelperFunctions.millitimestamp()
         
     #This method is used to limit the rate of requests sent to GitHub
