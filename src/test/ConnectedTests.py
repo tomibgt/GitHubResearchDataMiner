@@ -30,6 +30,13 @@ class ConnectedTest(unittest.TestCase):
         validFlag = commits.count('\n') > 2
         self.assertTrue(validFlag, "Cannot draw commit logs from GitHub")
 
+    def testGitTreeFileSize(self):
+        tree = self.connection.repo.get_git_tree("09981dc5c4faf51c6b2713d345d9038f5282f269", False)
+        for treeElement in tree.tree:
+            #print ("Tree-element: "+treeElement.path+":"+str(treeElement.size))
+            if treeElement.path == "src/config.cfg":
+                self.assertEqual(treeElement.size, 115, "Failed to assert correct file size at given revision.")
+
     # issue #1 Produce CSV file of all commit data of a given repository
     def testProduceCSVfile(self):
         filepath = self.connection.getCsv()
