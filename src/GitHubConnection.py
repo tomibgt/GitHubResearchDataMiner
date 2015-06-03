@@ -4,6 +4,7 @@ import GitHubResearchDataMiner
 import HelperFunctions
 from github import Github
 from github.GithubException import UnknownObjectException
+from github.GithubObject import NotSet
 
 
 class GitHubConnection(object):
@@ -51,6 +52,12 @@ class GitHubConnection(object):
             if line != None:
                 line = line+'\n'
                 fileh.write(line.encode("utf-8"))
+        issues  = self.repo.get_issues("*", "all", "*", NotSet, "", "created", "asc", self.repo.created_at)
+        for issue in issues:
+            line = self.getCsvLineFromIssue(issue)
+            if line != None:
+                line = line+'\n'
+                fileh.write(line.encode("utf-8"))
         fileh.close()
         return(filepath)
 
@@ -58,7 +65,7 @@ class GitHubConnection(object):
     Returns the header row for the output csv file
     '''
     def getCsvHeaderRow(self):
-        return u"sha;commit date;committed file names;commit additions;commit deletions;commit changes;commit message"
+        return u"sha;commit/create date;committed file names;commit additions;commit deletions;commit changes;commit message;issue title;issue closed;issue labels"
 
     '''
     Parses the given GitHub commit into a row for the csv file.
@@ -93,5 +100,22 @@ class GitHubConnection(object):
             #raise
             #AttributeErrors are ignored, because some commits have no committer, which causes these errors
             #This means that some of the commits are dropped off
+        return reva
+
+    def getCsvLineFromIssue(self, issue):
+        issuetitle   = issue.title
+        issuecreated = issue.created_at
+        issueclosed  = issue.closed_at
+        issuelabels  = ""
+        comma        = False
+        for alabel in issue.labels:
+            if(comma):
+                issuelabels = issuelabels+','
+            issuelabels = issuelabels+alabel.name
+            comma = True
+        if GitHubResearchDataMiner.config.get('debug', 'verbose'):
+            print "Read issue "+str(issue.id)+": "+issuetitle+";"+str(issuecreated)+";"+str(issueclosed)
+        reva = ";"+str(issuecreated)+";;;;;;"+issuetitle+";"+str(issueclosed)+";"+issuelabels
+        reva = reva.replace('\n', ' ')
         return reva
     
