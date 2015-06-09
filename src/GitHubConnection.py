@@ -44,7 +44,7 @@ class GitHubConnection(object):
     def getCsv(self):
         filepath = 'output.csv'
         fileh = open(filepath, 'w')
-        fileh.write(self.getCsvHeaderRow())
+        fileh.write(self.getCsvHeaderRow()+'\n')
         self.__choke()
         commits = self.repo.get_commits()
         for commit in commits:
@@ -77,6 +77,7 @@ class GitHubConnection(object):
         commitadds    = ""
         commitdels    = ""
         commitchanges = ""
+        commitchangetotal = 0
         comma        = False
         try:
             for afile in commit.files:
@@ -89,10 +90,11 @@ class GitHubConnection(object):
                 commitadds    = commitadds+str(afile.additions)
                 commitdels    = commitdels+str(afile.deletions)
                 commitchanges = commitchanges+str(afile.changes)
+                commitchangetotal += afile.changes
                 comma = True
             if GitHubResearchDataMiner.config.get('debug', 'verbose'):
                 print "Read commit "+commit.sha+": "+commitcommit.message+";"+str(commitauthor)
-            reva = commit.sha+";"+str(commitauthor.created_at)+";"+commitfiles+";"+commitadds+";"+commitdels+";"+commitchanges+";"+commitcommit.message
+            reva = commit.sha+";"+str(commitauthor.created_at)+";"+commitfiles+";"+commitadds+";"+commitdels+";"+str(commitchangetotal)+";"+commitcommit.message
             reva = reva.replace('\n', ' ')
         except AttributeError as detail:
             print "Attribute Error for sha("+commit.sha+")", detail
