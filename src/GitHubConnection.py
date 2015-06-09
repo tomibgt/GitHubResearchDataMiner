@@ -94,7 +94,7 @@ class GitHubConnection(object):
                 comma = True
             if GitHubResearchDataMiner.config.get('debug', 'verbose'):
                 print "Read commit "+commit.sha+": "+commitcommit.message+";"+str(commitauthor)
-            reva = commit.sha+";"+str(commitauthor.created_at)+";"+commitfiles+";"+commitadds+";"+commitdels+";"+str(commitchangetotal)+";"+commitcommit.message
+            reva = commit.sha+";"+str(commit.date)+";"+commitfiles+";"+commitadds+";"+commitdels+";"+str(commitchangetotal)+";"+commitcommit.message
             reva = reva.replace('\n', ' ')
         except AttributeError as detail:
             print "Attribute Error for sha("+commit.sha+")", detail
