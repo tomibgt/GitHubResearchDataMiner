@@ -8,14 +8,15 @@ from github.GithubObject import NotSet
 
 
 class GitHubConnection(object):
-    def __init__(self, user, repo):
-        self.gitHubUserName = user
-        self.gitHubRepoName = repo
-        self.github = Github(GitHubResearchDataMiner.config.get('authentication', 'ghusername'), GitHubResearchDataMiner.config.get('authentication', 'ghpassword'))
+    def __init__(self, config):
+        self.config = config
+        self.gitHubUserName = config.user
+        self.gitHubRepoName = config.repo
+        self.github = Github(config.get('authentication', 'ghusername'), config.get('authentication', 'ghpassword'))
         try: # Try to open the repository
-            self.repo = self.github.get_repo(user+"/"+repo)
+            self.repo = self.github.get_repo(config.user+"/"+config.repo)
         except UnknownObjectException:
-            print "Repository "+user+"/"+repo+" not found."
+            print "Repository "+config.user+"/"+config.repo+" not found."
             GitHubResearchDataMiner.printHowToUse()
             sys.exit()
         self.requestRateTimer = HelperFunctions.millitimestamp()
@@ -25,7 +26,7 @@ class GitHubConnection(object):
         delta = float(HelperFunctions.millitimestamp()-self.requestRateTimer)
         if delta < 80:
             naptime=(80-delta)/1000
-            if GitHubResearchDataMiner.config.get('debug', 'verbose'):
+            if self.config.get('debug', 'verbose'):
                 print "Sleeping "+str(naptime)+" seconds..."
             time.sleep(naptime)
         self.requestRateTimer = HelperFunctions.millitimestamp()
@@ -41,8 +42,7 @@ class GitHubConnection(object):
     '''
     Returns a handle to a csv file
     '''
-    def getCsv(self):
-        filepath = 'output.csv'
+    def getCsv(self, filepath):
         fileh = open(filepath, 'w')
         fileh.write(self.getCsvHeaderRow()+'\n')
         self.__choke()
@@ -92,7 +92,7 @@ class GitHubConnection(object):
                 commitchanges = commitchanges+str(afile.changes)
                 commitchangetotal += afile.changes
                 comma = True
-            if GitHubResearchDataMiner.config.get('debug', 'verbose'):
+            if self.config.get('debug', 'verbose'):
                 print "Read commit "+commit.sha+": "+commitcommit.message+";"+str(commitauthor)
             reva = commit.sha+";"+str(commit.date)+";"+commitfiles+";"+commitadds+";"+commitdels+";"+str(commitchangetotal)+";"+commitcommit.message
             reva = reva.replace('\n', ' ')
@@ -115,7 +115,7 @@ class GitHubConnection(object):
                 issuelabels = issuelabels+','
             issuelabels = issuelabels+alabel.name
             comma = True
-        if GitHubResearchDataMiner.config.get('debug', 'verbose'):
+        if self.config.get('debug', 'verbose'):
             print "Read issue "+str(issue.id)+": "+issuetitle+";"+str(issuecreated)+";"+str(issueclosed)
         reva = ";"+str(issuecreated)+";;;;;;"+issuetitle+";"+str(issueclosed)+";"+issuelabels
         reva = reva.replace('\n', ' ')

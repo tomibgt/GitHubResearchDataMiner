@@ -8,20 +8,23 @@ import ConfigParser
 import os
 import sys
 import GitHubConnection
-
-config = ConfigParser.ConfigParser()
-config.readfp(open(os.path.dirname(__file__)+'/config.cfg'))
+from BgtConfiguration import BgtConfiguration
+from BgtConfiguration import BadCommandLineException
 
 def printHowToUse():
-    print "Usage: python GitHubResearchDataMiner.py githubUserName githubProjectName"
+    print "Usage: python GitHubResearchDataMiner.py githubUserName githubProjectName [outputfilepath.csv]"
 
 if __name__ == '__main__':
-    if len(sys.argv) != 3:
+    config = BgtConfiguration()
+    try:
+        config.readConfigfile(os.path.dirname(__file__)+'/config.cfg')
+        config.parseCommandLine(sys.argv)
+    except BadCommandLineException as e:
+        print e.message
         printHowToUse()
-        sys.exit()    
-    user = sys.argv[1]
-    repo = sys.argv[2]
-    connection = GitHubConnection.GitHubConnection(user=user, repo=repo)
-    connection.getCsv()
+        sys.exit()
+    
+    connection = GitHubConnection.GitHubConnection(config)
+    connection.getCsv(config.outputfile)
 
     
