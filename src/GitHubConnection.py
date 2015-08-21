@@ -24,9 +24,9 @@ class GitHubConnection(object):
     #This method is used to limit the rate of requests sent to GitHub
     def __choke(self):
         if self.config.get('debug', 'verbose'):
-            print "Sleep? rate_limiting:"+str(self.github.get_rate_limit().remaining)+" resettime:"+str(self.github.get_rate_limit().reset)+" currenttime:"+str(time.time())
-        if self.github.get_rate_limit().remaining<3:
-            naptime = self.github.get_rate_limit().reset-int(time.time())+5
+            print "Sleep? rate_limiting:"+str(self.github.get_rate_limit().rate.remaining)+" resettime:"+str(self.github.get_rate_limit().rate.reset)+" currenttime:"+str(time.time())
+        if self.github.get_rate_limit().rate.remaining<3:
+            naptime = self.github.get_rate_limit().rate.reset-int(time.time())+5
             if self.config.get('debug', 'verbose'):
                 print "Sleeping "+str(naptime)+" seconds..."
             time.sleep(naptime)
