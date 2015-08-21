@@ -26,7 +26,7 @@ class GitHubConnection(object):
         if self.config.get('debug', 'verbose'):
             print "Sleep? rate_limiting:"+str(self.github.rate_limiting[0])+" resettime:"+str(self.github.rate_limiting_resettime)+" currenttime:"+str(time.time())
         if self.github.rate_limiting[0]<3:
-            naptime = self.github.rate_limiting_resettime-int(time.time())+1
+            naptime = self.github.rate_limiting_resettime-int(time.time())+5
             if self.config.get('debug', 'verbose'):
                 print "Sleeping "+str(naptime)+" seconds..."
             time.sleep(naptime)
@@ -79,6 +79,7 @@ class GitHubConnection(object):
         commitchanges = ""
         commitchangetotal = 0
         comma        = False
+        self.__choke()
         try:
             for afile in commit.files:
                 if(comma):
