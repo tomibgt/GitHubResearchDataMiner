@@ -23,14 +23,14 @@ class GitHubConnection(object):
         
     #This method is used to limit the rate of requests sent to GitHub
     def __choke(self):
-        delta = float(HelperFunctions.millitimestamp()-self.requestRateTimer)
-        if delta < 80:
-            naptime=(80-delta)/1000
+        if self.config.get('debug', 'verbose'):
+            print "Sleep? rate_limiting:"+str(self.github.rate_limiting[0])+" resettime:"+str(self.github.rate_limiting_resettime)+" currenttime:"+str(time.time())
+        if self.github.rate_limiting[0]<3:
+            naptime = self.github.rate_limiting_resettime-int(time.time())+1
             if self.config.get('debug', 'verbose'):
                 print "Sleeping "+str(naptime)+" seconds..."
             time.sleep(naptime)
-        self.requestRateTimer = HelperFunctions.millitimestamp()
-        
+
     def getCommitMessages(self):
         self.__choke()
         commits = self.repo.get_commits()
@@ -93,7 +93,10 @@ class GitHubConnection(object):
                 commitchangetotal += afile.changes
                 comma = True
             if self.config.get('debug', 'verbose'):
-                print "Read commit "+commit.sha+": "+commitcommit.message+";"+str(commitauthor)
+                try:
+                    print "Read commit "+commit.sha+": "+commitcommit.message+";"+str(commitauthor)
+                except UnicodeEncodeError:
+                    print "--Unicode failure in printing commit metadata--"
             reva = commit.sha+";"+str(commit.date)+";"+commitfiles+";"+commitadds+";"+commitdels+";"+str(commitchangetotal)+";"+commitcommit.message
             reva = reva.replace('\n', ' ')
         except AttributeError as detail:
@@ -116,7 +119,10 @@ class GitHubConnection(object):
             issuelabels = issuelabels+alabel.name
             comma = True
         if self.config.get('debug', 'verbose'):
-            print "Read issue "+str(issue.id)+": "+issuetitle+";"+str(issuecreated)+";"+str(issueclosed)
+            try:
+                print "Read issue "+str(issue.id)+": "+issuetitle+";"+str(issuecreated)+";"+str(issueclosed)
+            except UnicodeEncodeError:
+                print "--Unicode failure in printing issue metadata"
         reva = ";"+str(issuecreated)+";;;;;;"+issuetitle+";"+str(issueclosed)+";"+issuelabels
         reva = reva.replace('\n', ' ')
         return reva
