@@ -19,6 +19,8 @@ if __name__ == '__main__':
     try:
         config.readConfigfile(os.path.dirname(__file__)+'/config.cfg')
         config.parseCommandLine(sys.argv)
+        if config.get('debug', 'verbose'):
+            print "Debug, verbose setting: True"
     except BadCommandLineException as e:
         print e.message
         printHowToUse()
