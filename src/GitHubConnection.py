@@ -2,6 +2,7 @@ import sys
 import time
 import GitHubResearchDataMiner
 import HelperFunctions
+from StringSanitizer import StringSanitizer
 from github import Github
 from github.GithubException import UnknownObjectException
 from github.GithubObject import NotSet
@@ -10,6 +11,7 @@ from github.GithubObject import NotSet
 class GitHubConnection(object):
     def __init__(self, config):
         self.config = config
+        self.stringSanitizer = StringSanitizer()
         self.gitHubUserName = config.user
         self.gitHubRepoName = config.repo
         self.github = Github(config.get('authentication', 'ghusername'), config.get('authentication', 'ghpassword'))
@@ -98,7 +100,7 @@ class GitHubConnection(object):
                     print "Read commit "+commit.sha+": "+commitcommit.message+";"+str(commitauthor)
                 except UnicodeEncodeError:
                     print "--Unicode failure in printing commit metadata--"
-            reva = commit.sha+";"+str(commit.date)+";"+commitfiles+";"+commitadds+";"+commitdels+";"+str(commitchangetotal)+";"+commitcommit.message.replace(';', '.,')
+            reva = commit.sha+";"+str(commit.date)+";"+commitfiles+";"+commitadds+";"+commitdels+";"+str(commitchangetotal)+";"+self.stringSanitizer.stripNonPrintableCharactersFromString(self.stringSanitizer.stripSemicolonsFromString(commitcommit.message))
             reva = reva.replace('\n', ' ')
         except AttributeError as detail:
             print "Attribute Error for sha("+commit.sha+")", detail
