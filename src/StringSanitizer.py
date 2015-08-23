@@ -28,8 +28,8 @@ class StringSanitizer(object):
         '''
         return self.control_char_re.sub('', string)
 
-    def stripSemicolonsFromString(self, string):
+    def stripBadCharactersFromString(self, string):
         '''
-        Replaces semicolons (;) with a period and a comma (.,)
+        Replaces semicolons (;) with a period and a comma (.,) and other difficlt characters with a hyphen
         '''
-        return string.replace(';', '.,')
+        return string.replace(';', '.,').replace('~', '-').replace('#', '-')
