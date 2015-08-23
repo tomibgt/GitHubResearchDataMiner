@@ -100,7 +100,7 @@ class GitHubConnection(object):
                     print "Read commit "+commit.sha+": "+commitcommit.message+";"+str(commitauthor)
                 except UnicodeEncodeError:
                     print "--Unicode failure in printing commit metadata--"
-            reva = commit.sha+";"+str(commit.date)+";"+commitfiles+";"+commitadds+";"+commitdels+";"+str(commitchangetotal)+";"+self.stringSanitizer.stripNonPrintableCharactersFromString(self.stringSanitizer.stripSemicolonsFromString(commitcommit.message))
+            reva = commit.sha+";"+str(commit.date)+";"+commitfiles+";"+commitadds+";"+commitdels+";"+str(commitchangetotal)+";"+self.stringSanitizer.stripNonPrintableCharactersFromString(self.stringSanitizer.stripBadCharactersFromString(commitcommit.message))
             reva = reva.replace('\n', ' ')
         except AttributeError as detail:
             print "Attribute Error for sha("+commit.sha+")", detail
